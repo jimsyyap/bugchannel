@@ -2,7 +2,7 @@
 
 https://bughunters.google.com/reports/vrp/wG2bN8vZr
 
-gemini - This Google Vulnerability Reward Program (VRP) report, submitted by researcher **Jakub Domeracki**, describes a security flaw in the login process for **Google Gemini CodeAssist**. It was serious enough that Google rewarded him with **$20,000**.
+gemini - This Google Vulnerability Reward Program (VRP) report, submitted by a researcher, describes a security flaw in the login process for **Google Gemini CodeAssist**. It was serious enough that Google rewarded him with **$20,000**.
 
 ### ELI5: The "Fake Address" Trick
 
@@ -19,10 +19,10 @@ The researcher found a clever way to trick the guard:
 
 ### What actually happened (The Technical Part)
 
-The vulnerability involved a **`postMessage` targetOrigin bypass**.
+The vulnerability involved a `postMessage targetOrigin bypass`.
 
 * **The Vulnerable Code:** When you log into Gemini CodeAssist, the website sends your "Authorization Code" (the key to your account) back to the main app using a browser feature called `postMessage`. It checked the destination using a simple rule: `origin.endsWith(".google.com")`.
-* **The Exploit:** Jakub realized that he could provide a "destination" string that looked like a URL path (e.g., `https://attacker.com/something.google.com`). Because this string ends with `.google.com`, the security check passed.
+* **The Exploit:** the attacker realized that he could provide a "destination" string that looked like a URL path (e.g., `https://attacker.com/something.google.com`). Because this string ends with `.google.com`, the security check passed.
 * **The Impact:** However, browsers ignore the "path" part of a URL when sending these messages and only look at the domain (`attacker.com`). This allowed an attacker to trick Google into sending a user's private login credentials to a server they controlled, leading to a full **account takeover**.
 
 Google has since fixed this by using much stricter checks to ensure messages only go to verified, official Google domains.
@@ -31,7 +31,7 @@ Google has since fixed this by using much stricter checks to ensure messages onl
 
 *prompt* if i wanted to investigate such vulnerabilities, what would the methodology or process be? also outline possible resources, tools i can use.
 
-Investigating `postMessage` vulnerabilities (like the one Jakub found) requires a mix of static code analysis and dynamic testing.
+Investigating `postMessage` vulnerabilities (like the one attacker found) requires a mix of static code analysis and dynamic testing.
 
 Here is the professional methodology and the toolkit you'll need.
 
@@ -44,6 +44,7 @@ Here is the professional methodology and the toolkit you'll need.
 The goal is to find where the application is "talking" to other windows or frames.
 
 * **Keyword Search:** Grep through gathered JavaScript files for keywords like `.postMessage(`, `window.addEventListener("message"`, or `.on("message"`.
+
 * **Live Monitoring:** Navigate the site while watching for cross-window communication. Look for features like third-party logins (OAuth), embedded widgets (chat, payments), or multi-domain dashboards.
 
 ### Phase 2: Identifying the Listener
@@ -91,7 +92,7 @@ If you want to practice these techniques in a safe environment, start here:
 
 *prompt* is it possible to create or add such a vulnerability to a forked owasp juice shop on my computer? if so, how?
 
-Since Juice Shop is built with **Node.js (Express)** on the backend and **Angular** on the frontend, you can introduce a "message listener" that mimics the exact logic flaw Jakub found in the Google report.
+Since Juice Shop is built with **Node.js (Express)** on the backend and **Angular** on the frontend, you can introduce a "message listener" that mimics the exact logic flaw attacker found in the Google report.
 
 Here is a guide on how to modify your local Juice Shop to include a vulnerable `postMessage` handler.
 
